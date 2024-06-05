@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="description" content="" />
+    <meta name="author" content="" />
+    <title>Clean Blog - Start Bootstrap Theme</title>
+    <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
+    <!-- Font Awesome icons (free version)-->
+    <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+    <!-- Google fonts-->
+    <link href="https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic" rel="stylesheet" type="text/css" />
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css" />
+    <!-- Core theme CSS (includes Bootstrap)-->
+    <link href="css/site.css" rel="stylesheet" />
+</head>
+
+<main>
+    <form>
+        <!-- Email input -->
+        <div data-mdb-input-init class="form-outline mb-4">
+            <input type="username" id="txtUserName" class="form-control" />
+            <label class="form-label" for="txtUserName">Username</label>
+        </div>
+
+        <!-- Password input -->
+        <div data-mdb-input-init class="form-outline mb-4">
+            <input type="password" id="txtPassword" class="form-control" />
+            <label class="form-label" for="txtPassword">Password</label>
+        </div>
+
+        <!-- 2 column grid layout for inline styling -->
+        <div class="row mb-4">
+            <div class="col d-flex justify-content-center">
+                <!-- Checkbox -->
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="" id="form2Example31" checked />
+                    <label class="form-check-label" for="form2Example31"> Remember me </label>
+                </div>
+            </div>
+
+        </div>
+        <div id="divResult"></div>
+        <!-- Submit button -->
+        <button type="button" id="btnLogin" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-block mb-4">Sign in</button>
+
+        <!-- Register buttons -->
+        <div class="text-center">
+            <p>Not a member? <a asp-area="" asp-controller="Home" asp-action="Register">Register</a></p>
+        </div>
+    </form>
+    
+</main>
+<!-- Bootstrap core JS-->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Core theme JS-->
+<script src="js/site.js"></script>
+<!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *-->
+<!-- * *                               SB Forms JS                               * *-->
+<!-- * * Activate your form at https://startbootstrap.com/solution/contact-forms * *-->
+<!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *-->
+<script src="https://cdn.startbootstrap.com/sb-forms-latest.js"></script>
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/lib/jquery/dist/jquery.js"></script>
+<script>
+    $(document).ready(function () {
+        var ApiUrl = "https://localhost:7033/api/User/SignIn";
+        $("#btnLogin").click(function () {
+
+            var username = $("#txtUserName").val();
+            var password = $("#txtPassword").val();
+
+            console.log("Username: ", username, "Password:", password);
+
+            if (username == "" || password == "") {
+                $("#divResult")
+                    .show()
+                    .removeClass()
+                    .addClass("alert alert-danger")
+                    .html("Tüm Alanlarý Doldurunuz!")
+                    .fadeOut(5000);
+                return false;
+            }
+            var login = new Object();
+            login.userName = username;
+            login.password = password;
+
+            $.ajax({
+                url: ApiUrl,
+                method: "POST",
+                data: JSON.stringify(login),
+                contentType: "application/json",
+                success: function (data) {
+                    if (data.status) {
+                        console.log(data);
+                        localStorage.setItem("token", data.message);
+                        localStorage.setItem("username", username);
+                        location.href = "/Home/Categories";
+                    } else {
+                        $("#divResult")
+                            .show()
+                            .removeClass()
+                            .addClass("alert alert-danger")
+                            .html(data.message)
+                            .fadeOut(3000);
+
+                    }
+                },
+                error: function (e) {
+                    console.log(e);
+                }
+            });
+        });
+
+    });
+</script>

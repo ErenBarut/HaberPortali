@@ -1,0 +1,121 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="description" content="" />
+    <meta name="author" content="" />
+    <title>Haber Portalı - En güncel Haberler</title>
+    <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
+    <!-- Font Awesome icons (free version)-->
+    <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+    <!-- Google fonts-->
+    <link href="https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic" rel="stylesheet" type="text/css" />
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css" />
+    <!-- Core theme CSS (includes Bootstrap)-->
+    <link href="c:\users\burak\documents\playground\haberportali2\haberportali\haberportalifrontend\wwwroot\css\site.css" rel="stylesheet" />
+    <link href="css/styles.css" rel="stylesheet" />
+</head>
+<body>
+    <!-- Page Header-->
+    <header class="masthead" style="background-image: url('assets/img/home-bg.jpg')">
+        <div class="container position-relative px-4 px-lg-5">
+            <div class="row gx-4 gx-lg-5 justify-content-center">
+                <div class="col-md-10 col-lg-8 col-xl-7">
+                    <div class="site-heading">
+                        <h1>Haber Portalı</h1>
+                        <span class="subheading">En güncel Haberler</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+    <!-- Main Content-->
+    <div class="container px-4 px-lg-5">
+        <div class="row gx-4 gx-lg-5 justify-content-center">
+            <div class="col-md-10 col-lg-8 col-xl-7" id="post-list">
+                <!-- Post preview-->
+                <div class="post-preview">
+                    <a href="Post.cshtml">
+                        <h2 class="post-title" id="title"></h2>
+                        <h3 class="post-subtitle" id="content"></h3>
+                    </a>
+                    <p class="post-meta">
+                        Posted by
+                        <p id="author"></p>
+                    <p id="created-at"></p>
+                    </p>
+                </div>
+                <!-- Divider-->
+                <hr class="my-4" />
+                <!-- Pager-->
+            </div>
+        </div>
+    </div>
+  
+    
+</body>
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/lib/jquery/dist/jquery.js"></script>
+<script>
+
+    $(document).ready(function () {
+        var token = localStorage.getItem("token");
+        if (token == "" || token == null) {
+            location.href = "/Home/Login";
+            return false;
+        }
+
+        GetWorkList();
+
+        function GetWorkList() {
+            $.ajax({
+                url: "https://localhost:7033/" + "api/News/GetList",
+                method: "GET",
+                contentType: "application/json",
+                headers: {
+                    "Authorization": "Bearer " + token,
+                },
+                success: function (data) {
+                    console.log("success data:", data);
+                    // Clear existing posts
+                    $('#post-preview').remove();
+                    // Loop through the data array
+                    for (var i = 0; i < data.length; i++) {
+                        // Create a post preview element
+                        var title = data[i].title;
+                        var content = data[i].content;
+                        var createdData = data[i].createdDate;
+
+                        // Create a post preview element
+                        var postPreview = $('.post-preview').first().clone(); // Clone the first (hidden) post preview
+                        // Set the content of the post preview
+                        postPreview.find('#title').text(data[i].title);
+                        postPreview.find('#content').text(data[i].content);
+                        postPreview.find('#author').text(data[i].author); // Replace with actual author field
+                        postPreview.find('#created-at').text(data[i].createdAt); // Replace with actual date field
+                        // Adjust the href to your Post.cshtml dynamically
+                        postPreview.find('a').attr('href', 'Post.cshtml?id=' + data[i].id); // Assuming you have an ID field in your data
+                        postPreview.show(); // Show the cloned post preview
+                        // Add the post preview to the page
+                        $('#post-list').append(postPreview)
+                        $('#post-list').append('<hr class="my-4" />');
+                    }
+                }
+                ,
+                error: function (req, error) { console.log('error: ', error); alert('Error retrieving posts.'); }
+            });
+        }
+
+        function openPostDetails(postId) {
+            location.href = "/Home/PostDetails?id=" + postId;
+        }
+    });
+
+    
+
+
+</script>

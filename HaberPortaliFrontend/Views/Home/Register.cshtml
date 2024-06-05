@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="description" content="" />
+    <meta name="author" content="" />
+    <title>Register</title>
+    <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
+    <!-- Font Awesome icons (free version)-->
+    <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+    <!-- Google fonts-->
+    <link href="https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic" rel="stylesheet" type="text/css" />
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css" />
+    <!-- Core theme CSS (includes Bootstrap)-->
+    <link href="css/site.css" rel="stylesheet" />
+</head>
+
+<main>
+    <form>
+        
+        <div data-mdb-input-init class="form-outline mb-4">
+            <input type="username" id="txtUserName" class="form-control" />
+            <label class="form-label" for="txtUserName">Kullanýcý adý</label>
+        </div>
+
+        <div data-mdb-input-init class="form-outline mb-4">
+            <input type="text" id="txtFullname" class="form-control" />
+            <label class="form-label" for="txtFullname">Ýsim Soyisim</label>
+        </div>
+
+        <div data-mdb-input-init class="form-outline mb-4">
+            <input type="email" id="txtEmail" class="form-control" />
+            <label class="form-label" for="txtEmail">E-posta</label>
+        </div>
+
+        <div data-mdb-input-init class="form-outline mb-4">
+            <input type="text" id="txtPhoneNumber" class="form-control" />
+            <label class="form-label" for="txtPhoneNumber">Telefon Numarasý</label>
+        </div>
+
+        <div data-mdb-input-init class="form-outline mb-4">
+            <input type="password" id="txtPassword" class="form-control" />
+            <label class="form-label" for="txtPassword">Þifre</label>
+        </div>
+        <div id="divResult"></div>
+        <!-- Submit button -->
+        <button type="button" id="btnRegister" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-block mb-4">Kayýt ol</button>
+        <div id="divResult">
+
+        </div>
+    </form>
+    
+</main>
+<!-- Bootstrap core JS-->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Core theme JS-->
+<script src="js/site.js"></script>
+<!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *-->
+<!-- * *                               SB Forms JS                               * *-->
+<!-- * * Activate your form at https://startbootstrap.com/solution/contact-forms * *-->
+<!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *-->
+<script src="https://cdn.startbootstrap.com/sb-forms-latest.js"></script>
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/lib/jquery/dist/jquery.js"></script>
+<script>
+    $(document).ready(function () {
+        var ApiUrl = "https://localhost:7033/api/User/Add";
+        $("#btnRegister").click(function () {
+
+            var username = $("#txtUserName").val();
+            var fullName = $("#txtFullname").val();
+            var email = $("#txtEmail").val();
+            var phoneNumber = $("#txtPhoneNumber").val();
+            var password = $("#txtPassword").val();
+
+            // if (username == "" || password == "" || fullName = "" || email = "" || phoneNumber = "") {
+            //     $("#divResult")
+            //         .show()
+            //         .removeClass()
+            //         .addClass("alert alert-danger")
+            //         .html("Tüm Alanlarý Doldurunuz!")
+            //         .fadeOut(5000);
+            //     return false;
+            // }
+            var register = new Object();
+            register.id = Math.floor(Math.random() * 10000).toString();
+            register.userName = username;
+            register.fullName = fullName;
+            register.email = email;
+            register.phoneNumber = phoneNumber;
+            register.password = password;
+
+            console.log("Id: ", register.id)
+
+            $.ajax({
+                url: ApiUrl,
+                method: "POST",
+                data: JSON.stringify(register),
+                contentType: "application/json",
+                success: function (data) {
+                    if (data.status) {
+                        console.log(data);
+                        $("#divResult")
+                            .show()
+                            .removeClass()
+                            .addClass("alert alert-success")
+                            .html("Baþarýyla kayýt olundu")
+                            .fadeOut(3000);
+                            location.href = "/Home/Login"
+                    
+                    } else {
+                        $("#divResult")
+                            .show()
+                            .removeClass()
+                            .addClass("alert alert-danger")
+                            .html(data.message)
+                            .fadeOut(3000);
+
+                    }
+                },
+                error: function (e) {
+                    console.log(e);
+                }
+            });
+        });
+
+    });
+</script>
